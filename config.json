@@ -1,0 +1,265 @@
+{
+  "format_version": 1,
+  "model_type": "yourmt3-r47b-vocal-single-source",
+  "library_name": "pytorch",
+  "weights": "model.pt",
+  "source_checkpoint": {
+    "name": "r47b_ps1_p03_resume5150_s6850",
+    "original_format": "pytorch_lightning_checkpoint",
+    "sha256": "81c703f4f0b89cf17535adb7eea24bde5825ca158cabebbca7604ff7bb175614",
+    "epoch": 68,
+    "global_step": 6850,
+    "pytorch_lightning_version": "2.6.1"
+  },
+  "audio_cfg": {
+    "codec": "spec",
+    "hop_length": 300,
+    "audio_backend": "torchaudio",
+    "sample_rate": 16000,
+    "input_frames": 32767,
+    "n_fft": 2048,
+    "n_mels": 512,
+    "f_min": 50.0,
+    "f_max": 8000.0
+  },
+  "model_cfg": {
+    "encoder_type": "perceiver-tf",
+    "decoder_type": "multi-t5",
+    "pre_encoder_type": "conv",
+    "pre_encoder_type_default": {
+      "t5": null,
+      "perceiver-tf": "conv",
+      "conformer": null
+    },
+    "pre_decoder_type": "mc_shared_linear",
+    "pre_decoder_type_default": {
+      "t5": {
+        "t5": null
+      },
+      "perceiver-tf": {
+        "t5": "linear",
+        "multi-t5": "mc_shared_linear"
+      },
+      "conformer": {
+        "t5": null
+      }
+    },
+    "conv_out_channels": 128,
+    "t5_basename": "google/t5-v1_1-small",
+    "pretrained": false,
+    "use_task_conditional_encoder": true,
+    "use_task_conditional_decoder": true,
+    "d_feat": 128,
+    "tie_word_embeddings": true,
+    "vocab_size": 596,
+    "num_max_positions": 1034,
+    "encoder": {
+      "t5": {
+        "d_model": 512,
+        "num_heads": 6,
+        "num_layers": 8,
+        "dropout_rate": 0.05,
+        "position_encoding_type": "sinusoidal",
+        "ff_widening_factor": 2,
+        "ff_layer_type": "t5_gmlp"
+      },
+      "perceiver-tf": {
+        "num_latents": 26,
+        "d_latent": 128,
+        "d_model": 128,
+        "num_blocks": 3,
+        "num_local_transformers_per_block": 2,
+        "num_temporal_transformers_per_block": 2,
+        "sca_use_query_residual": true,
+        "dropout_rate": 0.05,
+        "position_encoding_type": "rope",
+        "attention_to_channel": true,
+        "layer_norm_type": "layer_norm",
+        "ff_layer_type": "moe",
+        "ff_widening_factor": 4,
+        "moe_num_experts": 8,
+        "moe_topk": 2,
+        "hidden_act": "silu",
+        "rotary_type_sca": "pixel",
+        "rotary_type_latent": "pixel",
+        "rotary_type_temporal": "lang",
+        "rotary_apply_to_keys": false,
+        "rotary_partial_pe": false,
+        "rope_partial_pe": true,
+        "num_max_positions": 110,
+        "vocab_size": 596
+      },
+      "conformer": {
+        "d_model": 512,
+        "intermediate_size": 512,
+        "num_heads": 8,
+        "num_layers": 8,
+        "dropout_rate": 0.1,
+        "layerdrop": 0.1,
+        "position_encoding_type": "rotary",
+        "conv_dim": [
+          512,
+          512,
+          512,
+          512,
+          512,
+          512,
+          512
+        ],
+        "conv_stride": [
+          5,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "conv_kernel": [
+          10,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "conv_depthwise_kernel_size": 31
+      }
+    },
+    "decoder": {
+      "t5": {
+        "d_model": 512,
+        "num_heads": 6,
+        "num_layers": 8,
+        "dropout_rate": 0.05,
+        "position_encoding_type": "sinusoidal",
+        "ff_widening_factor": 2,
+        "ff_layer_type": "t5_gmlp"
+      },
+      "multi-t5": {
+        "d_model": 512,
+        "num_heads": 6,
+        "num_layers": 8,
+        "dropout_rate": 0.05,
+        "position_encoding_type": "sinusoidal",
+        "ff_widening_factor": 2,
+        "ff_layer_type": "t5_gmlp",
+        "num_channels": 13,
+        "num_max_positions": 1034,
+        "vocab_size": 596
+      }
+    },
+    "feat_length": 110,
+    "event_length": 1024,
+    "init_factor": 1.0
+  },
+  "shared_cfg": {
+    "PATH": {
+      "data_home": "./data"
+    },
+    "BSZ": {
+      "train_sub": 1,
+      "train_local": 1,
+      "validation": 1,
+      "test": 1
+    },
+    "AUGMENTATION": {
+      "train_random_amp_range": [
+        0.8,
+        1.1
+      ],
+      "train_stem_iaug_prob": 0.0,
+      "train_stem_xaug_policy": {
+        "max_k": 3,
+        "tau": 0.3,
+        "alpha": 1.0,
+        "max_subunit_stems": 12,
+        "p_include_singing": null,
+        "no_instr_overlap": true,
+        "no_drum_overlap": true,
+        "uhat_intra_stem_augment": true
+      },
+      "train_pitch_shift_range": [
+        -1,
+        1
+      ]
+    },
+    "DATAIO": {
+      "num_workers": 0,
+      "prefetch_factor": null,
+      "pin_memory": false,
+      "persistent_workers": false
+    },
+    "CHECKPOINT": {
+      "save_top_k": 4,
+      "monitor": "validation/macro_onset_f",
+      "mode": "max",
+      "save_last": true,
+      "filename": "{epoch}-{step}"
+    },
+    "TRAINER": {
+      "limit_train_batches": 1.0,
+      "limit_val_batches": 1.0,
+      "limit_test_batches": 1.0,
+      "gradient_clip_val": 1.0,
+      "accumulate_grad_batches": 1,
+      "check_val_every_n_epoch": 1,
+      "num_sanity_val_steps": 0
+    },
+    "WANDB": {
+      "mode": "disabled",
+      "save_dir": "./.cache/wandb",
+      "cache_dir": "./.cache/wandb/cache"
+    },
+    "LR_SCHEDULE": {
+      "warmup_steps": 500,
+      "total_steps": 6850,
+      "final_cosine": 5e-06
+    },
+    "TOKENIZER": {
+      "max_shift_steps": "auto",
+      "shift_step_ms": 10
+    }
+  },
+  "task_manager": {
+    "task_name": "mc13_full_plus_256",
+    "max_shift_steps": 206
+  },
+  "eval_subtask_key": "default",
+  "eval_vocab": [
+    {
+      "Singing Voice": [
+        100,
+        101
+      ]
+    }
+  ],
+  "eval_drum_vocab": null,
+  "write_output_vocab": null,
+  "onset_tolerance": 0.05,
+  "model_init_kwargs": {
+    "aux_onset_loss_weight": 0.0,
+    "aux_active_loss_weight": 0.0,
+    "aux_dropout_p": 0.1
+  },
+  "load_state_dict": {
+    "strict": false,
+    "allowed_missing_prefixes": [
+      "aux_",
+      "f0_adapter"
+    ],
+    "allowed_unexpected_prefixes": [
+      "pitchshift."
+    ]
+  },
+  "inference": {
+    "input": "mono vocal stem audio",
+    "output": "single MIDI file",
+    "default_sample_rate": 16000,
+    "default_chunk_seconds": 12.0,
+    "default_overlap_seconds": 2.0,
+    "arbitrary_audio_route": "direct_r47b_model_pt"
+  },
+  "weights_sha256": "7acc929d0e71f8d2ddf2b3cee3384fc9536470196c06d3ac741f4161e41bdfeb"
+}
